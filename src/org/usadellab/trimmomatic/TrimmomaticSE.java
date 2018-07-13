@@ -42,6 +42,8 @@ public class TrimmomaticSE extends Trimmomatic
 
 	private Logger logger;
 
+  volatile Throwable parserError = null;
+
 	public TrimmomaticSE(Logger logger)
 	{
 		this.logger=logger;
@@ -136,6 +138,12 @@ public class TrimmomaticSE extends Trimmomatic
 			trimLogThread.start();
 			}
 
+    Thread.UncaughtExceptionHandler h = new Thread.UncaughtExceptionHandler() {
+      public void uncaughtException(Thread th, Throwable ex) {
+        parserError = ex;
+      }
+    };
+    parserThread.setUncaughtExceptionHandler(h);
 		parserThread.start();
 		serializerThread.start();
 		statsThread.start();
@@ -179,6 +187,10 @@ public class TrimmomaticSE extends Trimmomatic
 			serializerThread.join();
 			if (trimLogThread != null)
 				trimLogThread.join();
+
+      if (parserError != null) {
+        throw new RuntimeException(parserError);
+      }
 
 			statsThread.join();
 			logger.infoln(statsWorker.getStats().processStatsSE(statsSummaryStream));

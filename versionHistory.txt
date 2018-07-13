@@ -16,3 +16,4 @@ Version 0.25: Support for -jar invocation
 Version 0.27: Support for short adapters and/or short overlaps
               Beta of MAXINFO trimmer
               
+Version 0.28: Fixed bug with falsely reporting success when threads error out
