@@ -34,7 +34,9 @@ public class ConcatGZIPInputStream extends InputStream
 			}
 		
 		if(more)
+			{
 			gzIn=new GZIPHelperInputStream(source);
+			}
 		else
 			gzIn=null;
 	}
@@ -49,36 +51,28 @@ public class ConcatGZIPInputStream extends InputStream
 	@Override
 	public int read() throws IOException
 	{
-		if(gzIn==null)
-			return -1;
-	
-		int res=gzIn.read();
-		if(res==-1)
+		int res=-1;
+		
+		while(res==-1 && gzIn!=null)
 			{
-			nextGzipInputStream();
-			if(gzIn==null)
-				return -1;
-			else
-				res=gzIn.read();
+			res=gzIn.read();
+			if(res==-1)
+				nextGzipInputStream();
 			}
-	
+
 		return res;
 	}
 
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException
 	{
-		if(gzIn==null)
-			return -1;
+		int res=-1;
 	
-		int res=gzIn.read(b, off, len);
-		if(res==-1)
+		while(res==-1 && gzIn!=null)
 			{
-			nextGzipInputStream();
-			if(gzIn==null)
-				return -1;
-			else
-				res=gzIn.read(b, off, len);
+			res=gzIn.read(b,off,len);
+			if(res==-1)
+				nextGzipInputStream();
 			}
 		
 		return res;
@@ -87,18 +81,15 @@ public class ConcatGZIPInputStream extends InputStream
 	@Override
 	public int read(byte[] b) throws IOException
 	{
-		if(gzIn==null)
-			return -1;
+		int res=-1;
 	
-		int res=gzIn.read(b);
-		if(res==-1)
+		while(res==-1 && gzIn!=null)
 			{
-			nextGzipInputStream();
-			if(gzIn==null)
-				return -1;
-			else
-				res=gzIn.read(b);
-			}	
+			res=gzIn.read(b);
+			if(res==-1)
+				nextGzipInputStream();
+			}
+
 		return res;	
 	}
 
